@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026一建阅卷招募填报系统</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  :root{
+    --paper:#F5F1E8;          /* 试卷纸 */
+    --paper-card:#FFFDF7;     /* 答题卡 */
+    --ink:#1E2630;            /* 墨色 */
+    --ink-soft:#3C4655;
+    --vermilion:#B32A1E;      /* 批阅朱红 */
+    --vermilion-deep:#8C1F15;
+    --line:#D9D1C0;           /* 纸上线条 */
+    --line-soft:#E6DFD1;
+    --bluegrey:#43536A;
+    --muted:#6E6759;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"Noto Sans SC",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{font-family:"Noto Serif SC","Songti SC","SimSun",serif;}
+  a{text-decoration:none;color:inherit;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+
+  /* ===== 顶部考务横条 ===== */
+  .topbar{
+    background:var(--vermilion);
+    color:#FBEDEA;
+    font-size:13px;letter-spacing:.14em;
+    border-bottom:3px solid var(--vermilion-deep);
+  }
+  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;height:38px;gap:16px;}
+  .topbar .dot{display:inline-block;width:6px;height:6px;background:#F3D9C9;border-radius:50%;margin:0 10px;vertical-align:middle;}
+  .topbar .right{opacity:.85;letter-spacing:.08em;}
+
+  /* ===== Hero ===== */
+  .hero{position:relative;padding:74px 0 64px;overflow:hidden;}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:13px;letter-spacing:.28em;color:var(--vermilion);
+    font-weight:500;margin-bottom:22px;
+  }
+  .eyebrow::before{content:"";width:34px;height:1px;background:var(--vermilion);}
+  h1{
+    font-family:"Noto Serif SC",serif;
+    font-size:clamp(34px,4.6vw,56px);
+    font-weight:900;line-height:1.18;letter-spacing:.02em;
+    color:var(--ink);
+  }
+  h1 .accent{color:var(--vermilion);}
+  .hero-sub{
+    margin-top:20px;font-size:16px;color:var(--ink-soft);max-width:520px;
+  }
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
+  .chip{
+    font-size:13px;color:var(--bluegrey);
+    border:1px solid var(--line);background:var(--paper-card);
+    padding:6px 14px;border-radius:2px;
+  }
+  .cta-row{display:flex;flex-wrap:wrap;gap:16px;margin-top:36px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:15px 30px;font-size:15px;font-weight:500;
+    border-radius:2px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s;
+    border:1px solid transparent;
+  }
+  .btn-primary{background:var(--vermilion);color:#fff;}
+  .btn-primary:hover{background:var(--vermilion-deep);transform:translateY(-2px);box-shadow:0 10px 24px -10px rgba(140,31,21,.6);}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--ink);}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper);transform:translateY(-2px);}
+  .btn svg{width:16px;height:16px;}
+
+  /* 试卷卡片（签名元素） */
+  .paper-card{
+    position:relative;background:var(--paper-card);
+    border:1px solid var(--line);
+    box-shadow:0 30px 60px -28px rgba(30,38,48,.4),0 4px 12px -6px rgba(30,38,48,.15);
+    padding:26px 26px 26px 58px;
+    transform:rotate(1.2deg);
+  }
+  .paper-card::before{ /* 密封线 */
+    content:"";position:absolute;left:38px;top:18px;bottom:18px;
+    border-left:2px dashed #C9BFA8;
+  }
+  .seal-text{
+    position:absolute;left:14px;top:50%;transform:translateY(-50%) rotate(180deg);
+    writing-mode:vertical-rl;font-size:11px;letter-spacing:.3em;color:#B6AB93;
+  }
+  .holes{position:absolute;left:33px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-around;}
+  .holes span{width:10px;height:10px;border-radius:50%;background:#E7DFCE;box-shadow:inset 0 1px 2px rgba(0,0,0,.18);}
+  .pc-head{display:flex;justify-content:space-between;border-bottom:1px solid var(--line-soft);padding-bottom:12px;font-size:12px;color:var(--muted);}
+  .pc-title{font-family:"Noto Serif SC",serif;font-weight:700;font-size:17px;margin:16px 0 4px;}
+  .pc-no{font-size:11px;color:var(--muted);letter-spacing:.1em;}
+  .answer-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin:18px 0 16px;}
+  .answer-grid i{aspect-ratio:1;border:1px solid #DCD4C4;background:#fff;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;color:#9A9282;}
+  .pc-mark{display:flex;align-items:center;gap:12px;}
+  .score{font-family:"Noto Serif SC",serif;color:var(--vermilion);font-weight:700;font-size:22px;}
+  .stamp{
+    margin-left:auto;width:64px;height:64px;border:2.5px solid var(--vermilion);
+    color:var(--vermilion);border-radius:4px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:"Noto Serif SC",serif;font-weight:700;line-height:1.1;
+    transform:rotate(-8deg);opacity:.86;
+    background:rgba(179,42,30,.04);
+  }
+  .stamp small{font-size:10px;letter-spacing:.1em;}
+  .stamp b{font-size:18px;}
+  .check{width:30px;height:30px;color:var(--vermilion);}
+
+  /* ===== 通用区块 ===== */
+  section.block{padding:64px 0;border-top:1px solid var(--line-soft);}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:40px;}
+  .sec-head h2{font-family:"Noto Serif SC",serif;font-size:28px;font-weight:700;}
+  .sec-head .en{font-size:12px;letter-spacing:.26em;color:var(--muted);text-transform:uppercase;}
+
+  /* 流程（真实序列） */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);background:var(--paper-card);}
+  .step{padding:32px 28px;position:relative;}
+  .step + .step{border-left:1px solid var(--line-soft);}
+  .step .n{font-family:"Noto Serif SC",serif;font-size:13px;color:var(--vermilion);letter-spacing:.2em;}
+  .step h3{font-size:17px;margin:14px 0 10px;font-weight:700;}
+  .step p{font-size:14px;color:var(--ink-soft);}
+
+  /* 字段表 */
+  .fields{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .field{background:var(--paper-card);padding:22px 20px;}
+  .field .k{font-size:12px;color:var(--muted);letter-spacing:.14em;}
+  .field .v{font-family:"Noto Serif SC",serif;font-size:18px;font-weight:600;margin-top:8px;}
+  .field .auto{color:var(--vermilion);font-size:12px;font-family:"Noto Sans SC",sans-serif;font-weight:400;margin-left:6px;}
+
+  /* 14 组 */
+  .groups{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;}
+  .group{
+    background:var(--paper-card);border:1px solid var(--line);
+    padding:18px 8px;text-align:center;border-radius:2px;
+    font-family:"Noto Serif SC",serif;font-size:15px;font-weight:600;
+    transition:border-color .15s,color .15s;
+  }
+  .group:hover{border-color:var(--vermilion);color:var(--vermilion);}
+
+  /* 注意事项 */
+  .notes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .note{background:var(--paper-card);border:1px solid var(--line);padding:28px 26px;border-radius:2px;}
+  .note .ic{width:26px;height:26px;color:var(--vermilion);margin-bottom:14px;}
+  .note h3{font-size:16px;margin-bottom:10px;}
+  .note p{font-size:13.5px;color:var(--ink-soft);}
+
+  /* 页脚 */
+  footer{background:var(--ink);color:#C9C3B8;padding:44px 0 36px;margin-top:20px;}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;flex-wrap:wrap;}
+  footer .f-name{font-family:"Noto Serif SC",serif;font-size:18px;color:#F3EEE4;}
+  footer .f-desc{font-size:13px;margin-top:10px;max-width:420px;color:#9A9488;}
+  footer .f-meta{font-size:12px;color:#8E887C;text-align:right;line-height:2;}
+  .foot-bar{border-top:1px solid #333C48;margin-top:30px;padding-top:18px;font-size:12px;color:#7C766A;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  /* 滚动揭示 */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:40px;}
+    .paper-card{max-width:420px;}
+    .steps{grid-template-columns:1fr;}
+    .step + .step{border-left:none;border-top:1px solid var(--line-soft);}
+    .fields{grid-template-columns:repeat(2,1fr);}
+    .groups{grid-template-columns:repeat(4,1fr);}
+    .notes{grid-template-columns:1fr;}
+    .topbar .right{display:none;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶部考务横条 -->
+<div class="topbar">
+  <div class="wrap">
+    <div>2026 年度一级建造师考试阅卷<span class="dot"></span>招募人员信息填报</div>
+    <div class="right">考务工作组 · 在线填报平台</div>
+  </div>
+</div>
+
+<!-- ===== Hero ===== -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">2026 年度考务 · 招募填报</div>
+      <h1>2026<span class="serif">一建阅卷</span><br><span class="accent">招募填报系统</span></h1>
+      <p class="hero-sub">面向 14 个工作组的招募人员信息统一采集平台。组长在线填报、实时汇总，各组数据相互隔离，截止后统一导出归档。</p>
+      <div class="hero-meta">
+        <span class="chip">14 个工作组</span>
+        <span class="chip">问卷式录入</span>
+        <span class="chip">实时汇总</span>
+        <span class="chip">定时备份</span>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://4m17qvdw67qrf.doubao.link/app/app_17gy8pjddrx">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+          组长填报入口
+        </a>
+        <a class="btn btn-ghost" href="https://4m17qvdw67qrf.doubao.link/app/app_17gy8pjddrx">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v6"/></svg>
+          管理员后台入口
+        </a>
+      </div>
+    </div>
+
+    <!-- 试卷卡片（签名元素） -->
+    <div class="paper-card">
+      <div class="holes"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="seal-text">密封线内不要答题</div>
+      <div class="pc-head"><span>考务编号　YJ-2026-001</span><span>工作组　第　组</span></div>
+      <div class="pc-title">招募人员信息登记表</div>
+      <div class="pc-no">RECRUITMENT · INFORMATION · FORM</div>
+      <div class="answer-grid">
+        <i>姓名</i><i>学号</i><i>学院</i><i>导师</i><i>联系</i><i>年级</i>
+        <i>01</i><i>02</i><i>03</i><i>04</i><i>05</i><i>06</i>
+      </div>
+      <div class="pc-mark">
+        <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        <span class="score">已核对</span>
+        <div class="stamp"><small>2026</small><b>阅卷</b></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== 填报流程 ===== -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2>填报流程</h2><span class="en">Filling Procedure</span></div>
+    <div class="steps reveal">
+      <div class="step">
+        <div class="n">步骤 01</div>
+        <h3>登录并设置本组密码</h3>
+        <p>组长使用统一初始密码登录，首次登录须设置本组专属新密码，完成后方可进入填报。</p>
+      </div>
+      <div class="step">
+        <div class="n">步骤 02</div>
+        <h3>问卷式逐条录入</h3>
+        <p>按表单逐项录入招募人员信息，序号自动生成；可随时查看本组汇总表格并修改、删除。</p>
+      </div>
+      <div class="step">
+        <div class="n">步骤 03</div>
+        <h3>截止归档与导出</h3>
+        <p>截止时间到达后系统自动锁定为只读，管理员导出全部数据并按分组备份归档。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 采集字段 ===== -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2>采集信息字段</h2><span class="en">Data Fields</span></div>
+    <div class="fields reveal">
+      <div class="field"><div class="k">FIELD 01</div><div class="v">序号<span class="auto">系统自动生成</span></div></div>
+      <div class="field"><div class="k">FIELD 02</div><div class="v">姓名</div></div>
+      <div class="field"><div class="k">FIELD 03</div><div class="v">学号</div></div>
+      <div class="field"><div class="k">FIELD 04</div><div class="v">学院</div></div>
+      <div class="field"><div class="k">FIELD 05</div><div class="v">导师</div></div>
+      <div class="field"><div class="k">FIELD 06</div><div class="v">联系方式</div></div>
+      <div class="field"><div class="k">FIELD 07</div><div class="v">年级</div></div>
+      <div class="field"><div class="k">备注</div><div class="v" style="font-size:14px;font-weight:400;font-family:'Noto Sans SC',sans-serif;">字段与统一模板一致</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 14 个工作组 ===== -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2>工作组设置</h2><span class="en">14 Working Groups</span></div>
+    <div class="groups reveal">
+      <div class="group">第一组</div><div class="group">第二组</div><div class="group">第三组</div>
+      <div class="group">第四组</div><div class="group">第五组</div><div class="group">第六组</div>
+      <div class="group">第七组</div><div class="group">第八组</div><div class="group">第九组</div>
+      <div class="group">第十组</div><div class="group">第十一组</div><div class="group">第十二组</div>
+      <div class="group">第十三组</div><div class="group">第十四组</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 注意事项 ===== -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2>注意事项</h2><span class="en">Notice</span></div>
+    <div class="notes reveal">
+      <div class="note">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <h3>密码与登录</h3>
+        <p>各组初始使用统一密码，首次登录必须修改；如忘记密码，联系管理员重置，重置后再次登录需重新设置。</p>
+      </div>
+      <div class="note">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h3>数据隔离与安全</h3>
+        <p>各组只能查看和操作本组数据，系统在服务端进行组别校验；信息全程加密传输，删除操作不可恢复，请谨慎。</p>
+      </div>
+      <div class="note">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <h3>截止与备份</h3>
+        <p>截止时间以管理员设置为准，到点自动锁定；系统每日定时按分组备份，建议管理员及时下载存档。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 页脚 ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="f-name">2026一建阅卷招募填报系统</div>
+        <div class="f-desc">本页面为系统统一入口，点击上方入口进入填报平台；如遇登录或填报问题，请联系考务工作组管理员。</div>
+      </div>
+      <div class="f-meta">
+        工作组数量：14 个<br>
+        填报方式：在线问卷式录入<br>
+        数据归档：截止后统一导出
+      </div>
+    </div>
+    <div class="foot-bar">
+      <span>2026 年度一级建造师考试阅卷 · 考务工作组</span>
+      <span>招募人员信息采集 · 实时汇总 · 定时备份</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // 滚动揭示
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>
